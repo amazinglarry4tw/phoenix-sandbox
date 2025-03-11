@@ -14,11 +14,16 @@ defmodule SandboxWeb.StreamTestLive.Index do
 
   def render(assigns) do
     ~H"""
-    <div class="list-stream-tests" id="stream-tests" phx-update="stream">
+    <div
+      class="list-stream-tests"
+      id="stream-tests"
+      phx-update="stream"
+      style="display: flex; flex-direction: column-reverse;"
+    >
       <.stream_test_details
         :for={{dom_id, streamtest} <- @streams.streamtests}
         streamtest={streamtest}
-        id={dom_id}
+        dom_id={dom_id}
       />
     </div>
     """
@@ -26,7 +31,7 @@ defmodule SandboxWeb.StreamTestLive.Index do
 
   def stream_test_details(assigns) do
     ~H"""
-    <div class="detail" phx-click="change" phx-value-id={@id}>
+    <div class="detail" phx-click="change" id={@dom_id} phx-value-id={@streamtest.id}>
       {@streamtest.id} - {@streamtest.detail}
     </div>
     """
@@ -38,10 +43,14 @@ defmodule SandboxWeb.StreamTestLive.Index do
     # Hardcoding a known StreamTest id
     socket =
       socket
-      |> stream_insert(:streamtests, %StreamTest{
-        id: 2,
-        detail: "This should replace the second element?"
-      })
+      |> stream_insert(
+        :streamtests,
+        %StreamTest{
+          id: id,
+          detail: "This should replace the second element?"
+        },
+        at: :prepend
+      )
 
     {:noreply, socket}
   end
